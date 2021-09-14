@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -9,7 +10,10 @@ namespace Mrgrd56.JsonHttpClient.Tests
 {
     public class Tests
     {
-        private readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient = new()
+        {
+            BaseAddress = new Uri("https://jsonplaceholder.typicode.com/", UriKind.Absolute)
+        };
         
         [SetUp]
         public void Setup()
@@ -45,7 +49,7 @@ namespace Mrgrd56.JsonHttpClient.Tests
     }
 }".Trim();
             var expected = JsonConvert.DeserializeObject<User>(expectedUserJson);
-            var users = await _httpClient.GetAsync<User[]>("https://jsonplaceholder.typicode.com/users");
+            var users = await _httpClient.GetAsync<User[]>(new Uri("users", UriKind.Relative));
             var actual = users.FirstOrDefault();
             Assert.AreEqual(expected, actual);
             Assert.AreEqual(10, users.Length);
